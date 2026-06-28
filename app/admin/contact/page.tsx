@@ -6,8 +6,12 @@ import { ToastProvider, useToast } from '@/app/components/admin/Toast';
 import { Save, RotateCcw, Plus, X } from 'lucide-react';
 import { ContactData } from '@/lib/data/types';
 
-function ContactEditorContent() {
-  const { data, update } = usePortfolioData();
+interface ContactEditorContentProps {
+  data: any;
+  update: any;
+}
+
+function ContactEditorContent({ data, update }: ContactEditorContentProps) {
   const { showToast } = useToast();
   const [contact, setContact] = useState<ContactData>(data.contact);
   const [newPlatform, setNewPlatform] = useState('');
@@ -76,5 +80,20 @@ function ContactEditorContent() {
 }
 
 export default function ContactEditor() {
-  return <ToastProvider><ContactEditorContent /></ToastProvider>;
+  const { data, update, isLoaded } = usePortfolioData();
+
+  if (!isLoaded) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', gap: '16px' }}>
+        <div className="loading-initials" style={{ fontSize: '2rem' }}>YM</div>
+        <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Loading contact info...</div>
+      </div>
+    );
+  }
+
+  return (
+    <ToastProvider>
+      <ContactEditorContent data={data} update={update} />
+    </ToastProvider>
+  );
 }

@@ -9,8 +9,12 @@ import { AchievementItem } from '@/lib/data/types';
 
 const emptyAch: AchievementItem = { id: '', title: '', value: '', description: '', icon: 'TrendingUp' };
 
-function AchievementsManagerContent() {
-  const { data, update } = usePortfolioData();
+interface AchievementsManagerContentProps {
+  data: any;
+  update: any;
+}
+
+function AchievementsManagerContent({ data, update }: AchievementsManagerContentProps) {
   const { showToast } = useToast();
   const [items, setItems] = useState<AchievementItem[]>(data.achievements);
   const [editItem, setEditItem] = useState<AchievementItem | null>(null);
@@ -87,5 +91,20 @@ function AchievementsManagerContent() {
 }
 
 export default function AchievementsManager() {
-  return <ToastProvider><AchievementsManagerContent /></ToastProvider>;
+  const { data, update, isLoaded } = usePortfolioData();
+
+  if (!isLoaded) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', gap: '16px' }}>
+        <div className="loading-initials" style={{ fontSize: '2rem' }}>YM</div>
+        <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Loading achievements...</div>
+      </div>
+    );
+  }
+
+  return (
+    <ToastProvider>
+      <AchievementsManagerContent data={data} update={update} />
+    </ToastProvider>
+  );
 }

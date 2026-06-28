@@ -7,8 +7,13 @@ import { exportPortfolioData, importPortfolioData, resetPortfolioData } from '@/
 import { Save, RotateCcw, Download, Upload, Palette, Type, Globe, AlertTriangle } from 'lucide-react';
 import { ThemeSettings, SEOSettings } from '@/lib/data/types';
 
-function SettingsContent() {
-  const { data, update, reset } = usePortfolioData();
+interface SettingsContentProps {
+  data: any;
+  update: any;
+  reset: any;
+}
+
+function SettingsContent({ data, update, reset }: SettingsContentProps) {
   const { showToast } = useToast();
   const [theme, setTheme] = useState<ThemeSettings>(data.theme);
   const [seo, setSeo] = useState<SEOSettings>(data.seo);
@@ -200,5 +205,20 @@ function SettingsContent() {
 }
 
 export default function SettingsPage() {
-  return <ToastProvider><SettingsContent /></ToastProvider>;
+  const { data, update, reset, isLoaded } = usePortfolioData();
+
+  if (!isLoaded) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', gap: '16px' }}>
+        <div className="loading-initials" style={{ fontSize: '2rem' }}>YM</div>
+        <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Loading settings...</div>
+      </div>
+    );
+  }
+
+  return (
+    <ToastProvider>
+      <SettingsContent data={data} update={update} reset={reset} />
+    </ToastProvider>
+  );
 }

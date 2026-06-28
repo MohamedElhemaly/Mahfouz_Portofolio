@@ -23,7 +23,16 @@ const quickLinks = [
 ];
 
 export default function AdminDashboard() {
-  const { data } = usePortfolioData();
+  const { data, isLoaded } = usePortfolioData();
+
+  if (!isLoaded) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', gap: '16px' }}>
+        <div className="loading-initials" style={{ fontSize: '2rem' }}>YM</div>
+        <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Loading dashboard...</div>
+      </div>
+    );
+  }
 
   const stats = [
     { label: 'Experience Items', value: data.experience.length, color: '#22c55e' },

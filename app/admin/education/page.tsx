@@ -9,8 +9,12 @@ import { EducationItem } from '@/lib/data/types';
 
 const emptyEdu: EducationItem = { id: '', degree: '', institution: '', location: '', startDate: '', endDate: '', grade: '', coursework: [], achievements: [] };
 
-function EducationManagerContent() {
-  const { data, update } = usePortfolioData();
+interface EducationManagerContentProps {
+  data: any;
+  update: any;
+}
+
+function EducationManagerContent({ data, update }: EducationManagerContentProps) {
   const { showToast } = useToast();
   const [items, setItems] = useState<EducationItem[]>(data.education);
   const [editItem, setEditItem] = useState<EducationItem | null>(null);
@@ -106,5 +110,20 @@ function EducationManagerContent() {
 }
 
 export default function EducationManager() {
-  return <ToastProvider><EducationManagerContent /></ToastProvider>;
+  const { data, update, isLoaded } = usePortfolioData();
+
+  if (!isLoaded) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', gap: '16px' }}>
+        <div className="loading-initials" style={{ fontSize: '2rem' }}>YM</div>
+        <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Loading education info...</div>
+      </div>
+    );
+  }
+
+  return (
+    <ToastProvider>
+      <EducationManagerContent data={data} update={update} />
+    </ToastProvider>
+  );
 }

@@ -7,8 +7,12 @@ import { generateId } from '@/lib/utils/storage';
 import { Save, Plus, Pencil, Trash2, X } from 'lucide-react';
 import { SkillCategory, SkillItem } from '@/lib/data/types';
 
-function SkillsManagerContent() {
-  const { data, update } = usePortfolioData();
+interface SkillsManagerContentProps {
+  data: any;
+  update: any;
+}
+
+function SkillsManagerContent({ data, update }: SkillsManagerContentProps) {
   const { showToast } = useToast();
   const [categories, setCategories] = useState<SkillCategory[]>(data.skillCategories);
   const [editCat, setEditCat] = useState<string | null>(null);
@@ -151,5 +155,20 @@ function SkillsManagerContent() {
 }
 
 export default function SkillsManager() {
-  return <ToastProvider><SkillsManagerContent /></ToastProvider>;
+  const { data, update, isLoaded } = usePortfolioData();
+
+  if (!isLoaded) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', gap: '16px' }}>
+        <div className="loading-initials" style={{ fontSize: '2rem' }}>YM</div>
+        <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Loading skills...</div>
+      </div>
+    );
+  }
+
+  return (
+    <ToastProvider>
+      <SkillsManagerContent data={data} update={update} />
+    </ToastProvider>
+  );
 }

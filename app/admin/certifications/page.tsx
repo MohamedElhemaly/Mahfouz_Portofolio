@@ -9,8 +9,12 @@ import { CertificationItem } from '@/lib/data/types';
 
 const emptyCert: CertificationItem = { id: '', name: '', issuer: '', year: '', category: 'Finance' };
 
-function CertificationsManagerContent() {
-  const { data, update } = usePortfolioData();
+interface CertificationsManagerContentProps {
+  data: any;
+  update: any;
+}
+
+function CertificationsManagerContent({ data, update }: CertificationsManagerContentProps) {
   const { showToast } = useToast();
   const [items, setItems] = useState<CertificationItem[]>(data.certifications);
   const [editItem, setEditItem] = useState<CertificationItem | null>(null);
@@ -88,5 +92,20 @@ function CertificationsManagerContent() {
 }
 
 export default function CertificationsManager() {
-  return <ToastProvider><CertificationsManagerContent /></ToastProvider>;
+  const { data, update, isLoaded } = usePortfolioData();
+
+  if (!isLoaded) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', gap: '16px' }}>
+        <div className="loading-initials" style={{ fontSize: '2rem' }}>YM</div>
+        <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Loading certifications...</div>
+      </div>
+    );
+  }
+
+  return (
+    <ToastProvider>
+      <CertificationsManagerContent data={data} update={update} />
+    </ToastProvider>
+  );
 }

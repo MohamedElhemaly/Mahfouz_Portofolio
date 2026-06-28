@@ -11,8 +11,12 @@ const emptyProject: ProjectItem = {
   id: '', title: '', description: '', technologies: [], impact: '', achievements: [], image: '', type: 'technical',
 };
 
-function ProjectsManagerContent() {
-  const { data, update } = usePortfolioData();
+interface ProjectsManagerContentProps {
+  data: any;
+  update: any;
+}
+
+function ProjectsManagerContent({ data, update }: ProjectsManagerContentProps) {
   const { showToast } = useToast();
   const [items, setItems] = useState<ProjectItem[]>(data.projects);
   const [editItem, setEditItem] = useState<ProjectItem | null>(null);
@@ -127,18 +131,30 @@ function ProjectsManagerContent() {
                       accept="image/*" 
                       className="admin-input" 
                       style={{ cursor: 'pointer' }}
-                      onChange={e => {
+                      onChange={async e => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          const reader = new FileReader();
-                          reader.onloadend = () => {
-                            const result = reader.result;
-                            if (typeof result === 'string') {
-                              setEditItem(prev => prev ? { ...prev, image: result } : null);
+                          try {
+                            showToast('Uploading image...');
+                            const formData = new FormData();
+                            formData.append('file', file);
+                            
+                            const res = await fetch('/api/upload', {
+                              method: 'POST',
+                              body: formData,
+                            });
+                            
+                            const result = await res.json();
+                            if (result.success && result.filePath) {
+                              setEditItem(prev => prev ? { ...prev, image: result.filePath } : null);
                               showToast('Project image uploaded successfully!');
+                            } else {
+                              showToast(result.error || 'Upload failed', 'error');
                             }
-                          };
-                          reader.readAsDataURL(file);
+                          } catch (err) {
+                            console.error('Error uploading file:', err);
+                            showToast('Error uploading file', 'error');
+                          }
                         }
                       }}
                     />
@@ -198,5 +214,20 @@ function ProjectsManagerContent() {
 }
 
 export default function ProjectsManager() {
-  return <ToastProvider><ProjectsManagerContent /></ToastProvider>;
+  const { data, update, isLoaded } = usePortfolioData();
+
+  if (!isLoaded) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', gap: '16px' }}>
+        <div className="loading-initials" style={{ fontSize: '2rem' }}>YM</div>
+        <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Loading projects...</div>
+      </div>
+    );
+  }
+
+  return (
+    <ToastProvider>
+      <ProjectsManagerContent data={data} update={update} />
+    </ToastProvider>
+  );
 }

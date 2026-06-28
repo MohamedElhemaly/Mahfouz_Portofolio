@@ -6,8 +6,12 @@ import { ToastProvider, useToast } from '@/app/components/admin/Toast';
 import { Save, RotateCcw, Plus, X } from 'lucide-react';
 import { AboutData } from '@/lib/data/types';
 
-function AboutEditorContent() {
-  const { data, update } = usePortfolioData();
+interface AboutEditorContentProps {
+  data: any;
+  update: any;
+}
+
+function AboutEditorContent({ data, update }: AboutEditorContentProps) {
   const { showToast } = useToast();
   const [about, setAbout] = useState<AboutData>(data.about);
   const [newHighlight, setNewHighlight] = useState('');
@@ -88,5 +92,20 @@ function AboutEditorContent() {
 }
 
 export default function AboutEditor() {
-  return <ToastProvider><AboutEditorContent /></ToastProvider>;
+  const { data, update, isLoaded } = usePortfolioData();
+
+  if (!isLoaded) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', gap: '16px' }}>
+        <div className="loading-initials" style={{ fontSize: '2rem' }}>YM</div>
+        <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Loading about section...</div>
+      </div>
+    );
+  }
+
+  return (
+    <ToastProvider>
+      <AboutEditorContent data={data} update={update} />
+    </ToastProvider>
+  );
 }

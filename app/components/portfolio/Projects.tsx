@@ -67,10 +67,10 @@ export default function Projects({ data }: ProjectsProps) {
                 cursor: 'pointer',
               }}
             >
-              {/* Project header gradient */}
+              {/* Project header image or gradient fallback */}
               <div
                 style={{
-                  height: '140px',
+                  height: '180px',
                   background: `linear-gradient(135deg, ${typeInfo.bg}, rgba(99, 102, 241, 0.05))`,
                   display: 'flex',
                   alignItems: 'center',
@@ -79,19 +79,33 @@ export default function Projects({ data }: ProjectsProps) {
                   overflow: 'hidden',
                 }}
               >
-                <motion.div
-                  animate={hoveredId === project.id ? { scale: 1.1, rotate: 5 } : { scale: 1, rotate: 0 }}
-                  transition={{ duration: 0.4 }}
-                  style={{
-                    fontSize: '2.5rem',
-                    fontWeight: 800,
-                    color: `${typeInfo.text}30`,
-                    letterSpacing: '-0.03em',
-                    userSelect: 'none',
-                  }}
-                >
-                  {project.title.split(' ').slice(0, 2).map(w => w[0]).join('')}
-                </motion.div>
+                {project.image ? (
+                  <motion.img
+                    src={project.image}
+                    alt={project.title}
+                    animate={hoveredId === project.id ? { scale: 1.05 } : { scale: 1 }}
+                    transition={{ duration: 0.4 }}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                    }}
+                  />
+                ) : (
+                  <motion.div
+                    animate={hoveredId === project.id ? { scale: 1.1, rotate: 5 } : { scale: 1, rotate: 0 }}
+                    transition={{ duration: 0.4 }}
+                    style={{
+                      fontSize: '2.5rem',
+                      fontWeight: 800,
+                      color: `${typeInfo.text}30`,
+                      letterSpacing: '-0.03em',
+                      userSelect: 'none',
+                    }}
+                  >
+                    {project.title.split(' ').slice(0, 2).map(w => w[0]).join('')}
+                  </motion.div>
+                )}
 
                 {/* Shimmer effect on hover */}
                 {hoveredId === project.id && (

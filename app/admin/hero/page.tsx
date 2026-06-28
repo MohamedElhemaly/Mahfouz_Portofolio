@@ -6,8 +6,12 @@ import { ToastProvider, useToast } from '@/app/components/admin/Toast';
 import { Save, RotateCcw } from 'lucide-react';
 import { HeroData } from '@/lib/data/types';
 
-function HeroEditorContent() {
-  const { data, update } = usePortfolioData();
+interface HeroEditorContentProps {
+  data: any;
+  update: any;
+}
+
+function HeroEditorContent({ data, update }: HeroEditorContentProps) {
   const { showToast } = useToast();
   const [hero, setHero] = useState<HeroData>(data.hero);
 
@@ -148,9 +152,20 @@ function HeroEditorContent() {
 }
 
 export default function HeroEditor() {
+  const { data, update, isLoaded } = usePortfolioData();
+
+  if (!isLoaded) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', gap: '16px' }}>
+        <div className="loading-initials" style={{ fontSize: '2rem' }}>YM</div>
+        <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Loading hero section...</div>
+      </div>
+    );
+  }
+
   return (
     <ToastProvider>
-      <HeroEditorContent />
+      <HeroEditorContent data={data} update={update} />
     </ToastProvider>
   );
 }

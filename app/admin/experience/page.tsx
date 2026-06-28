@@ -11,8 +11,12 @@ const emptyExp: ExperienceItem = {
   id: '', title: '', company: '', location: '', startDate: '', endDate: '', description: [''], type: 'work',
 };
 
-function ExperienceManagerContent() {
-  const { data, update } = usePortfolioData();
+interface ExperienceManagerContentProps {
+  data: any;
+  update: any;
+}
+
+function ExperienceManagerContent({ data, update }: ExperienceManagerContentProps) {
   const { showToast } = useToast();
   const [items, setItems] = useState<ExperienceItem[]>(data.experience);
   const [editItem, setEditItem] = useState<ExperienceItem | null>(null);
@@ -177,5 +181,20 @@ function ExperienceManagerContent() {
 }
 
 export default function ExperienceManager() {
-  return <ToastProvider><ExperienceManagerContent /></ToastProvider>;
+  const { data, update, isLoaded } = usePortfolioData();
+
+  if (!isLoaded) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', gap: '16px' }}>
+        <div className="loading-initials" style={{ fontSize: '2rem' }}>YM</div>
+        <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Loading experience info...</div>
+      </div>
+    );
+  }
+
+  return (
+    <ToastProvider>
+      <ExperienceManagerContent data={data} update={update} />
+    </ToastProvider>
+  );
 }
